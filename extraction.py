@@ -15,10 +15,17 @@ if __name__ == "__main__":
         os.mkdir(path)
     os.chdir(path)
     
-    count = 1
+    file_list = os.listdir()
+    file_list.sort(key=len)
+    if len(file_list) > 0:
+        last_file = file_list[-1]
+        count = last_file.split('.')[0][5:]
+    else:
+        count = 1
     
+    next_link = None if count == 1 else f"https://kitsu.io/api/edge/anime?page[limit]=20&page[offset]={count * 20}"
     while count == 1 or next_link != None:
-        response = get_anime()
+        response = get_anime(next_link)
         obj = response.json()
         with open(f'anime{count}.json', 'w') as file:
             json.dump(obj['data'], file)
@@ -26,5 +33,5 @@ if __name__ == "__main__":
             next_link = obj['links']['next']
         else:
             next_link = None
-        last_link = obj['links']['last']
+        # last_link = obj['links']['last']
         count += 1
